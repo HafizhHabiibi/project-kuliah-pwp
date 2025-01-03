@@ -15,8 +15,8 @@ def create_app():
     app = Flask(__name__)
 
     # Load configurations
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    from .config import Config
+    app.config.from_object(Config)
 
     # Initialize extensions
     db.init_app(app)
