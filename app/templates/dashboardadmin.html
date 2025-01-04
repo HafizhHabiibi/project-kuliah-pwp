@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded shadow-md w-4/5">
+        <h1 class="text-2xl font-bold text-center mb-4">Dashboard Admin</h1>
+        <div class="flex justify-end items-center gap-4 mb-4">
+            <a href="{{ url_for('main.register') }}" class="bg-green-500 text-white px-4 py-2 rounded">Add User</a>
+            <a href="{{ url_for('main.logout') }}" class="bg-gray-700 text-white px-4 py-2 rounded">Logout</a>
+        </div>
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border border-gray-300 px-4 py-2 text-center">ID</th>
+                    <th class="border border-gray-300 px-4 py-2 text-center">Username</th>
+                    <th class="border border-gray-300 px-4 py-2 text-center">Role</th>
+                    <th class="border border-gray-300 px-4 py-2 text-center">Email</th>
+                    <th class="border border-gray-300 px-4 py-2 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="bg-white">
+                    <td class="border border-gray-300 px-4 py-2 text-center">{{ user.id }}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">{{ user.username }}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">{{ user.role }}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">{{ user.email }}</td>
+                    <td class="border border-gray-300 px-4 py-2 text-center">
+                        <a href="{{ url_for('main.edit', id=user.id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">Edit</a>
+                        <form action="{{ url_for('main.delete', id=user.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
