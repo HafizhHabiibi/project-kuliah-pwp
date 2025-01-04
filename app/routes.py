@@ -15,16 +15,16 @@ main = Blueprint('main', __name__)
     
 #     return jsonify(users_data)
 
-# route ke homepage
+# route ke dashboard
 @main.route('/')
-def homepage():
+def dashboard():
     if 'loggedin' in session:
         # ambil data dengan SQLAlchemy
         users = User.query.all()
         return render_template('index.html', name = session['username'], user = users)
     else:
         flash('Silahkan login dahulu untuk mengakses halaman ini.', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
 # route ke register / create
 @main.route('/register', methods = ['GET', 'POST'])
@@ -46,7 +46,7 @@ def register():
         db.session.commit()
 
         flash('Berhasil melakukan registrasi silahkan login!', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     return render_template('register.html', roles = roles)
 
 # edit user
@@ -64,7 +64,7 @@ def edit(id):
 
         db.session.commit()
         flash('User berhasil diedit', 'success')
-        return redirect(url_for('main.homepage'))
+        return redirect(url_for('main.dashboard'))
     
     return render_template('edit_user.html', user=user)
 
@@ -75,7 +75,7 @@ def delete(id):
     db.session.delete(user)
     db.commit()
     flash('User berhasil dihapus', 'danger')
-    return redirect(url_for('main.homepage'))
+    return redirect(url_for('main.dashboard'))
 
 
 # route ke login
@@ -92,7 +92,7 @@ def login():
             session['id'] = user.id
             session['username'] = user.username
             flash('Berhasil login', 'success')
-            return redirect(url_for('homepage'))
+            return redirect(url_for('main.dashboard'))
         else:
             flash('Email atau password tidak valid', 'danger')
     return render_template('login.html')
@@ -104,4 +104,4 @@ def logout():
     session.pop('id', None)
     session.pop('name', None)
     flash("Kamu berhasil logout", 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('main.login'))
