@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
-from .models import User
+from .models import User, db, Enumrole
 
 main = Blueprint('main', __name__)
 
@@ -30,10 +29,13 @@ def homepage():
 # route ke register / create
 @main.route('/register', methods = ['GET', 'POST'])
 def register():
+    roles = [role.value for role in Enumrole]
+
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        role = request.form['role']
 
         # hashing password saat user register
         hashed_password = generate_password_hash(password)
@@ -45,7 +47,7 @@ def register():
 
         flash('Berhasil melakukan registrasi silahkan login!', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html')
+    return render_template('register.html', roles = roles)
 
 # edit user
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
