@@ -16,14 +16,18 @@ main = Blueprint('main', __name__)
 #     return jsonify(users_data)
 
 # route ke dashboard
+# @main.route('/')
+# def dashboard():
+#     if 'loggedin' in session:
+#         # ambil data dengan SQLAlchemy
+#         users = User.query.all()
+#         return render_template('index.html', name = session['username'], user = users)
+#     else:
+#         return redirect(url_for('main.login'))
+
 @main.route('/')
-def dashboard():
-    if 'loggedin' in session:
-        # ambil data dengan SQLAlchemy
-        users = User.query.all()
-        return render_template('index.html', name = session['username'], user = users)
-    else:
-        return redirect(url_for('main.login'))
+def root_redirect():
+    return redirect(url_for('main.login'))
     
 # route ke dashboard admin
 @main.route('/dashboardadmin')
