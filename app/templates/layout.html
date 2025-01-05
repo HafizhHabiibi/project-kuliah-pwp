@@ -3,14 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Flask App</title>
+    <title>Rolepis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     {% block head %}
     {% endblock %}
 </head>
 <body class="bg-gray-100">
+
+    <!-- Flash Message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="absolute top-0 left-0 right-0 mt-4">
+            {% for category, message in messages %}
+                <div class="max-w-2xl mx-auto p-4 mb-4 text-white 
+                    {% if category == 'success' %}bg-green-500{% elif category == 'danger' %}bg-red-500{% elif category == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %}
+                    rounded">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+    
+    <!-- Body Content -->
     {% block body %}
     {% endblock %}
+    
 </body>
 </html>

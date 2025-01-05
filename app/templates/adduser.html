@@ -3,5 +3,45 @@
 {% block title %}Add User{% endblock %}
 
 {% block body %}
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="relative flex flex-col m-6 space-y-8 bg-white shadow-2xl rounded-2xl md:flex-row md:space-y-0 w-full max-w-4xl">
+            <div class="flex flex-col justify-center p-8 md:p-14 w-full">
+                <span class="mb-3 text-4xl font-bold text-center">Add User</span>
+                <form action="{{ url_for('main.adduser') }}" method="POST">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
+                        <div class="flex flex-col">
+                            <span class="mb-2 text-md">Username</span>
+                            <input type="text" name="username" id="username" class="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500" required>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="mb-2 text-md">Email</span>
+                            <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500" required>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-col">
+                            <span class="mb-2 text-md">Password</span>
+                            <input type="password" name="password" id="password" class="w-full p-3 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500" required>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="mb-2 text-md">Role</span>
+                            <select name="role" id="role" class="w-full p-2 border border-gray-300 rounded-md placeholder:font-light placeholder:text-gray-500" required>
+                                {% for role in roles %}
+                                    <option value="{{ role }}">{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
 
+                    <div class="mt-6"> 
+                        <div class="flex justify-center mt-10">
+                            <button type="submit" class="w-full max-w-xs bg-black text-white p-3 rounded-lg hover:bg-pink-200 hover:text-black hover:border hover:border-gray-300">
+                                Add User
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}
