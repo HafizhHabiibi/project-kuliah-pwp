@@ -23,7 +23,6 @@ def dashboard():
         users = User.query.all()
         return render_template('index.html', name = session['username'], user = users)
     else:
-        flash('Silahkan login dahulu untuk mengakses halaman ini.', 'warning')
         return redirect(url_for('main.login'))
     
 # route ke dashboard admin
@@ -48,7 +47,7 @@ def dashboarduser():
         flash('Anda tidak memiliki akses ke halaman ini.', 'danger')
         return redirect(url_for('main.login'))
 
-# route ke register / create
+# route ke register
 @main.route('/register', methods = ['GET', 'POST'])
 def register():
     roles = [role.value for role in Enumrole]
@@ -58,6 +57,18 @@ def register():
         email = request.form['email']
         password = request.form['password']
         role = request.form['role']
+
+        # Validasi apakah username atau email sudah ada
+        existing_user_by_username = User.query.filter_by(username=username).first()
+        existing_user_by_email = User.query.filter_by(email=email).first()
+
+        if existing_user_by_username:
+            flash('Username sudah terdaftar, silahkan pilih username lain.', 'danger')
+            return redirect(url_for('main.register'))
+
+        if existing_user_by_email:
+            flash('Email sudah terdaftar, silahkan pilih email lain.', 'danger')
+            return redirect(url_for('main.register'))
 
         # hashing password saat user register
         hashed_password = generate_password_hash(password)
@@ -71,6 +82,41 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html', roles = roles)
 
+# route ke adduser
+@main.route('/adduser', methods = ['GET', 'POST'])
+def adduser():
+    roles = [role.value for role in Enumrole]
+
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+        role = request.form['role']
+
+        # Validasi apakah username atau email sudah ada
+        existing_user_by_username = User.query.filter_by(username=username).first()
+        existing_user_by_email = User.query.filter_by(email=email).first()
+
+        if existing_user_by_username:
+            flash('Username sudah terdaftar, silahkan pilih username lain.', 'danger')
+            return redirect(url_for('main.register'))
+
+        if existing_user_by_email:
+            flash('Email sudah terdaftar, silahkan pilih email lain.', 'danger')
+            return redirect(url_for('main.register'))
+
+        # hashing password saat user adduser
+        hashed_password = generate_password_hash(password)
+
+        # simpan data baru dengan SQLAlchemy
+        new_user = User(username=username, role=role, email=email, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash('Berhasil melakukan registrasi silahkan login!', 'success')
+        return redirect(url_for('main.dashboardadmin'))
+    return render_template('adduser.html', roles = roles)
+
 # edit user
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
@@ -80,25 +126,46 @@ def edit(id):
         user.username = request.form['username']
         user.email = request.form['email']
         password = request.form['password']
+        user.role = request.form['role']
 
+        # Proses password jika ada input password baru
         if password:
             user.password_hash = generate_password_hash(password)
 
+        # Menyimpan perubahan ke database
         db.session.commit()
         flash('User berhasil diedit', 'success')
         return redirect(url_for('main.dashboardadmin'))
     
-    return render_template('edituser.html', user=user)
+    # Ambil semua role untuk dropdown
+    roles = [role.value for role in Enumrole]
+    return render_template('edituser.html', user=user, roles=roles)
 
 # hapus user
 @main.route('/delete/<int:id>', methods=['POST'])
 def delete(id):
-    user = User.query.get(id)
-    db.session.delete(user)
-    db.commit()
-    flash('User berhasil dihapus', 'danger')
+    try:
+        # Cari user berdasarkan id
+        user = User.query.get(id)
+        
+        # Validasi apakah user ditemukan
+        if not user:
+            flash('User tidak ditemukan.', 'warning')
+            return redirect(url_for('main.dashboardadmin'))
+        
+        # Hapus user dari database
+        db.session.delete(user)
+        db.session.commit()
+        
+        # Berikan pesan sukses
+        flash('User berhasil dihapus.', 'success')
+    except Exception as e:
+        # Rollback jika terjadi error
+        db.session.rollback()
+        flash(f'Gagal menghapus user: {str(e)}', 'danger')
+    
+    # Redirect ke halaman dashboard admin
     return redirect(url_for('main.dashboardadmin'))
-
 
 # route ke login
 @main.route('/login', methods = ['GET', 'POST'])
