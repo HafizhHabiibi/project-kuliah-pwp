@@ -103,11 +103,11 @@ def adduser():
 
         if existing_user_by_username:
             flash('Username sudah terdaftar, silahkan pilih username lain.', 'danger')
-            return redirect(url_for('main.register'))
+            return redirect(url_for('main.adduser'))
 
         if existing_user_by_email:
             flash('Email sudah terdaftar, silahkan pilih email lain.', 'danger')
-            return redirect(url_for('main.register'))
+            return redirect(url_for('main.adduser'))
 
         # hashing password saat user adduser
         hashed_password = generate_password_hash(password)
